@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./images/logo.png" width="180" alt="SwipeRide Logo">
+</p>
+
 # SwipeRide 🏍️
 ![SwipeRide Banner](./images/banner.png)
 
