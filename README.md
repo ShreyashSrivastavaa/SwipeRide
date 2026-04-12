@@ -1,8 +1,15 @@
-# 🏍️ Freedom - Motorcycle E-Hailing App Backend
+# SwipeRide 🏍️
+![SwipeRide Banner](./images/banner.png)
 
-This is the backend for **Freedom**, a motorcycle e-hailing app, built using **Node.js**, **Express**, **MongoDB**, and **JWT** for authentication. It manages user registration, login, driver matching, ride requests, payments, and ratings, along with real-time ride tracking, driver availability, and geolocation services.
+SwipeRide is a production-grade, real-time motorcycle ride-hailing API. Optimized for scalability and security, it features a low-latency driver-matching engine, Redis-backed location tracking, and a robust payment integration architecture.
 
-![freedomImage.png](images/freedomImage.png)
+## 🚀 Key Features
+
+*   **Real-time Matching**: Efficient driver-passenger matching using Socket.io Rooms and Geospatial indexing.
+*   **Scalable Architecture**: Highly optimized MongoDB schema designed to handle unlimited ride history without document size issues.
+*   **Secure Auth**: Multi-role JWT-based authentication with Firebase integration for mobile notifications.
+*   **Redis Caching**: Ultra-fast driver location tracking.
+*   **API Documentation**: Comprehensive documentation for easy frontend integration.
 
 ## 📋 Table of Contents
 
