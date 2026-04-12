@@ -1,0 +1,60 @@
+{
+    "name": "freedom",
+    "version": "1.0.0",
+    "description": "An e-hailing application using Express and MongoDB",
+    "main": "app.js",
+    "scripts": {
+        "start": "nodemon app.js",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "format:fix": "npm run format:write",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix ."
+    },
+    "keywords": [
+        "jobs",
+        "express",
+        "mongoose",
+        "api"
+    ],
+    "author": "Joel",
+    "license": "ISC",
+    "dependencies": {
+        "@googlemaps/google-maps-services-js": "^3.4.0",
+        "axios": "^1.7.7",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.3",
+        "cors": "^2.8.5",
+        "csurf": "^1.2.2",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.1",
+        "express-async-errors": "^3.1.1",
+        "express-fileupload": "^1.5.1",
+        "express-mongo-sanitize": "^2.2.0",
+        "express-rate-limit": "^7.4.1",
+        "firebase": "^11.0.1",
+        "firebase-admin": "^12.7.0",
+        "geolib": "^3.3.4",
+        "helmet": "^8.0.0",
+        "http": "^0.0.1-security",
+        "http-status-codes": "^2.3.0",
+        "joi": "^17.13.3",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^7.8.2",
+        "morgan": "^1.10.0",
+        "node-cron": "^3.0.3",
+        "node-geocoder": "^4.4.0",
+        "nodemailer": "^6.9.15",
+        "paystack-api": "^2.0.6",
+        "redis": "^4.7.0",
+        "socket.io": "^4.8.0",
+        "twilio": "^5.3.3",
+        "validator": "^13.12.0",
+        "xss-clean": "^0.1.4"
+    },
+    "devDependencies": {
+        "eslint": "^9.12.0",
+        "nodemon": "^3.0.1",
+        "prettier": "^3.3.3"
+    }
+}
