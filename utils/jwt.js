@@ -8,27 +8,24 @@ const jwt = require('jsonwebtoken')
  * @returns {String} - The generated JWT token
  */
 const generateToken = (user) => {
+    const secret = process.env.JWT_SECRET || 'swiperide_jwt_default_secret_key_2026'
+    const expiresIn = process.env.JWT_EXPIRES_IN || process.env.JWT_LIFETIME || '30d'
     return jwt.sign(
         {
             id: user._id, // User's ID
             name: user.name, // User's name
             role: user.role, // User's role (admin, driver, or user)
         },
-        process.env.JWT_SECRET,
+        secret,
         {
-            expiresIn: process.env.JWT_EXPIRES_IN, // Token expiration time
+            expiresIn,
         }
     )
 }
 
-/**
- * Verify a JWT token.
- *
- * @param {String} token - The token to be verified
- * @returns {Object} - The decoded token payload if valid, else throws an error
- */
 const verifyToken = (token) => {
-    return jwt.verify(token, process.env.JWT_SECRET)
+    const secret = process.env.JWT_SECRET || 'swiperide_jwt_default_secret_key_2026'
+    return jwt.verify(token, secret)
 }
 
 module.exports = {
