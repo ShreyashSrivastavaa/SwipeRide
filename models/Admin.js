@@ -49,11 +49,6 @@ const AdminSchema = new mongoose.Schema({
         enum: ['admin'],
         default: 'admin',
     },
-    role: {
-        type: String,
-        enum: ['admin'],
-        default: 'admin',
-    },
     isPhoneVerified: {
         type: Boolean,
         default: false,

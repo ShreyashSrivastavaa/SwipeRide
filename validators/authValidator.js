@@ -2,32 +2,46 @@ const Joi = require('joi')
 
 // Login Schema
 const loginValidator = Joi.object({
-    identifier: Joi.string().required(), // Can be email or phone
-    loginMethod: Joi.string().valid('email', 'phone').required(),
-})
-
-// Define the validation schema
-const otpValidator = Joi.object({
-    identifier: Joi.string()
-        .required()
-        .when('verificationMethod', {
-            is: 'phone',
-            then: Joi.string().pattern(/^\+?[1-9]\d{1,14}$/), // E.164 phone format
-            otherwise: Joi.string().email(), // Validate as email for 'email' verification method
-        }),
-    otp: Joi.string().length(6).required(), // Assumes OTP is a 6-digit code
-    verificationMethod: Joi.string().valid('phone', 'email').required(),
-})
-
-// Resend OTP Schema
-const resendOtpValidator = Joi.object({
-    identifier: Joi.string().when('verificationMethod', {
-        is: 'email',
-        then: Joi.string().email().required(), // Ensures identifier is a valid email if method is 'email'
-        otherwise: Joi.string()
-            .pattern(/^[0-9]{10,15}$/)
-            .required(), // Ensures identifier is a valid phone number if method is 'phone'
+    identifier: Joi.string().required().messages({
+        'string.empty': 'Please provide email or phone number',
+        'any.required': 'Identifier is required',
     }),
-    verificationMethod: Joi.string().valid('email', 'phone').required(), // Required to specify either 'email' or 'phone'
+    loginMethod: Joi.string().valid('email', 'phone').required().messages({
+        'any.only': 'Login method must be either email or phone',
+        'any.required': 'Login method is required',
+    }),
+    password: Joi.string().min(6).required().messages({
+        'string.empty': 'Please provide a password',
+        'string.min': 'Password must be at least 6 characters long',
+        'any.required': 'Password is required',
+    }),
 })
-module.exports = { loginValidator, otpValidator, resendOtpValidator }
+
+// OTP Verification Schema
+const otpValidator = Joi.object({
+    identifier: Joi.string().required().messages({
+        'string.empty': 'Please provide phone number or email',
+        'any.required': 'Identifier is required',
+    }),
+    otp: Joi.string().length(6).required().messages({
+        'string.length': 'OTP must be a 6-digit code',
+        'any.required': 'OTP is required',
+    }),
+    verificationMethod: Joi.string().valid('phone', 'email').default('phone'),
+})
+
+// Send / Resend OTP Schema
+const resendOtpValidator = Joi.object({
+    identifier: Joi.string().required().messages({
+        'string.empty': 'Please provide phone number or email',
+        'any.required': 'Identifier is required',
+    }),
+    verificationMethod: Joi.string().valid('email', 'phone').default('phone'),
+})
+
+module.exports = {
+    loginValidator,
+    otpValidator,
+    resendOtpValidator,
+    sendOtpValidator: resendOtpValidator,
+}

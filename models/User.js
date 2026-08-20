@@ -20,15 +20,42 @@ const UserSchema = new mongoose.Schema({
             message: 'Please provide a valid phone number',
         },
     },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true,
+        lowercase: true,
+        validate: {
+            validator: (v) => !v || validator.isEmail(v),
+            message: 'Please provide a valid email',
+        },
+    },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password'],
+        minlength: 6,
+    },
+    profilePicture: {
+        type: String,
+        default: 'default-avatar.jpg',
+    },
+    isPhoneVerified: {
+        type: Boolean,
+        default: false,
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
+    },
 
     paymentMethod: {
         type: String,
-        enum: ['cash', 'card'],
+        enum: ['cash', 'card', 'wallet'],
         default: 'cash',
     },
     preferredLanguage: {
         type: String,
-        enum: ['en', 'es', 'fr', 'de'], // Example language options (English, Spanish, French, German)
+        enum: ['en', 'es', 'fr', 'de'],
         default: 'en',
     },
 

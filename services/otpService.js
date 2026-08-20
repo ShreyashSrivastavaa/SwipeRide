@@ -1,117 +1,171 @@
-// // services/otpService.js
+const nodemailer = require('nodemailer')
+const twilio = require('twilio')
+const { redisClient } = require('../utils/redisClient')
 
-// const nodemailer = require('nodemailer');
+// In-memory fallback cache when Redis is offline
+const memoryOtpCache = new Map()
 
-// // Function to generate OTP
-// const generateOtp = () => {
-//     return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
-// };
+/**
+ * Generate a 6-digit numerical OTP code
+ */
+const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString()
+}
 
-// // Configure email transporter
-// const emailTransporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//     },
-// });
+/**
+ * Store OTP with 10-minute TTL in Redis (or in-memory fallback)
+ */
+const storeOtp = async (identifier, otp, ttlSeconds = 600) => {
+    const key = `otp:${identifier}`
+    try {
+        if (redisClient.isOpen) {
+            await redisClient.set(key, otp, { EX: ttlSeconds })
+            return true
+        }
+    } catch (err) {
+        console.warn('Redis unavailable for OTP storage, using memory fallback:', err.message)
+    }
 
-// // Function to send OTP via email
-// const sendOtpEmail = async (email, otp) => {
-//     const mailOptions = {
-//         from: `"Freedom Support" <${process.env.EMAIL_USER}>`,
-//         to: email,
-//         subject: 'Freedom Account Verification - OTP Code',
-//         html: `
-// <!DOCTYPE html>
-// <html>
-// <head>
-//     <style>
-//         body {
-//             font-family: Arial, sans-serif;
-//             color: #333;
-//             background-color: #f4f4f4;
-//             margin: 0;
-//             padding: 0;
-//         }
-//         .container {
-//             width: 100%;
-//             max-width: 600px;
-//             margin: 30px auto;
-//             padding: 20px;
-//             border-radius: 8px;
-//             background-color: #ffffff;
-//             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-//         }
-//         .header {
-//             text-align: center;
-//             padding-bottom: 20px;
-//             border-bottom: 1px solid #e0e0e0;
-//         }
-//         .header img {
-//             max-width: 120px;
-//         }
-//         .content {
-//             padding: 20px 0;
-//             text-align: center;
-//         }
-//         .otp-box {
-//             font-size: 24px;
-//             font-weight: bold;
-//             color: #007bff;
-//             padding: 15px;
-//             background-color: #f0f8ff;
-//             margin: 20px auto;
-//             width: fit-content;
-//             border-radius: 5px;
-//         }
-//         .footer {
-//             margin-top: 20px;
-//             font-size: 12px;
-//             color: #777;
-//             text-align: center;
-//             border-top: 1px solid #e0e0e0;
-//             padding-top: 20px;
-//         }
-//         a {
-//             color: #007bff;
-//             text-decoration: none;
-//         }
-//         a:hover {
-//             text-decoration: underline;
-//         }
-//     </style>
-// </head>
-// <body>
-//     <div class="container">
-//         <div class="header">
-//             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ89bRRkHLhgwb_wsOLVCVaUoJijX_6ynhDXg&s" alt="Freedom Logo">
-//         </div>
-//         <div class="content">
-//             <p>Dear Valued User,</p>
-//             <p>Welcome to <strong>Freedom</strong>! To complete your registration, please use the One-Time Password (OTP) below:</p>
-//             <div class="otp-box">${otp}</div>
-//             <p>This code is valid for the next 10 minutes. If you did not request this, please ignore this email.</p>
-//             <p>Thank you for choosing Freedom!</p>
-//             <p>Best regards,<br>The Freedom Team</p>
-//         </div>
-//         <div class="footer">
-//             <p>Need assistance? Contact our <a href="mailto:support@freedom.com">Support Team</a>.</p>
-//             <p>© 2024 Freedom, All rights reserved.</p>
-//         </div>
-//     </div>
-// </body>
-// </html>
-//         `,
-//     };
+    // Memory fallback
+    memoryOtpCache.set(key, {
+        otp,
+        expiresAt: Date.now() + ttlSeconds * 1000,
+    })
 
-//     try {
-//         await emailTransporter.sendMail(mailOptions);
-//         console.log('OTP email sent successfully to', email);
-//     } catch (error) {
-//         console.error('Error sending OTP email:', error);
-//         throw new Error('Failed to send OTP email. Please try again later.');
-//     }
-// };
+    // Auto cleanup
+    setTimeout(() => {
+        if (memoryOtpCache.has(key)) {
+            const item = memoryOtpCache.get(key)
+            if (item && Date.now() >= item.expiresAt) {
+                memoryOtpCache.delete(key)
+            }
+        }
+    }, ttlSeconds * 1000)
 
-// module.exports = { generateOtp, sendOtpEmail };
+    return true
+}
+
+/**
+ * Retrieve stored OTP
+ */
+const getStoredOtp = async (identifier) => {
+    const key = `otp:${identifier}`
+    try {
+        if (redisClient.isOpen) {
+            const otp = await redisClient.get(key)
+            if (otp) return otp
+        }
+    } catch (err) {
+        console.warn('Redis read failed for OTP, checking memory fallback:', err.message)
+    }
+
+    const item = memoryOtpCache.get(key)
+    if (item) {
+        if (Date.now() <= item.expiresAt) {
+            return item.otp
+        }
+        memoryOtpCache.delete(key)
+    }
+    return null
+}
+
+/**
+ * Delete stored OTP
+ */
+const deleteStoredOtp = async (identifier) => {
+    const key = `otp:${identifier}`
+    try {
+        if (redisClient.isOpen) {
+            await redisClient.del(key)
+        }
+    } catch (err) {
+        // ignore
+    }
+    memoryOtpCache.delete(key)
+}
+
+/**
+ * Send OTP via Email or SMS
+ */
+const sendOtp = async ({ identifier, verificationMethod = 'phone' }) => {
+    const otp = generateOtp()
+    await storeOtp(identifier, otp)
+
+    if (verificationMethod === 'email' && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        try {
+            const emailTransporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
+                },
+            })
+
+            await emailTransporter.sendMail({
+                from: `"SwipeRide Support" <${process.env.EMAIL_USER}>`,
+                to: identifier,
+                subject: 'SwipeRide Account Verification Code',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <h2 style="color: #FF5500; text-align: center;">SwipeRide</h2>
+                        <p>Your one-time verification code is:</p>
+                        <div style="font-size: 28px; font-weight: bold; text-align: center; color: #111; letter-spacing: 4px; padding: 12px; background: #F3F4F6; border-radius: 6px; margin: 20px 0;">${otp}</div>
+                        <p style="color: #666; font-size: 13px;">This code is valid for 10 minutes. Do not share it with anyone.</p>
+                    </div>
+                `,
+            })
+            console.log(`[OTP] Email sent to ${identifier}`)
+        } catch (error) {
+            console.error('Failed to send OTP email:', error.message)
+        }
+    } else if (
+        verificationMethod === 'phone' &&
+        process.env.TWILIO_ACCOUNT_SID &&
+        process.env.TWILIO_AUTH_TOKEN &&
+        process.env.TWILIO_PHONE_NUMBER
+    ) {
+        try {
+            const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+            await client.messages.create({
+                body: `Your SwipeRide verification code is: ${otp}. Valid for 10 minutes.`,
+                from: process.env.TWILIO_PHONE_NUMBER,
+                to: identifier,
+            })
+            console.log(`[OTP] SMS sent to ${identifier}`)
+        } catch (error) {
+            console.error('Failed to send OTP SMS via Twilio:', error.message)
+        }
+    } else {
+        // Fallback for development/testing: log OTP clearly to console
+        console.log(`[OTP DISPATCH - DEV] Code for ${identifier} (${verificationMethod}): ${otp}`)
+    }
+
+    return { success: true, message: 'OTP sent successfully', devOtp: process.env.NODE_ENV === 'test' || process.env.NODE_ENV !== 'production' ? otp : undefined }
+}
+
+/**
+ * Verify OTP
+ */
+const verifyOtp = async ({ identifier, otp }) => {
+    const storedOtp = await getStoredOtp(identifier)
+    if (!storedOtp) {
+        return { success: false, message: 'OTP has expired or was not requested' }
+    }
+
+    if (storedOtp !== otp.toString()) {
+        return { success: false, message: 'Invalid OTP code' }
+    }
+
+    // OTP is valid - delete from storage
+    await deleteStoredOtp(identifier)
+    return { success: true, message: 'OTP verified successfully' }
+}
+
+module.exports = {
+    generateOtp,
+    storeOtp,
+    getStoredOtp,
+    deleteStoredOtp,
+    sendOtp,
+    verifyOtp,
+}

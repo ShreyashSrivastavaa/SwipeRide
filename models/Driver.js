@@ -18,6 +18,19 @@ const DriverSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a phone number'],
     },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password'],
+        minlength: 6,
+    },
+    isPhoneVerified: {
+        type: Boolean,
+        default: false,
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
+    },
     profilePicture: {
         type: String,
         default: 'default-driver-profile-pic.jpg',

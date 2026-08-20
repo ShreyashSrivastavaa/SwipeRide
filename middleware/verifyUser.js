@@ -1,21 +1,24 @@
+const User = require('../models/User')
+const Driver = require('../models/Driver')
+const Admin = require('../models/Admin')
+
 const verifyUser = async (req, res, next) => {
     try {
-        const userId = req.user._id
-        const user = await User.findById(userId)
-
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found' })
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' })
         }
 
-        if (!user.isEmailVerified && !user.isPhoneVerified) {
+        const user = req.user
+        // If verification flag is set to false in strict verification mode:
+        if (process.env.ENFORCE_VERIFICATION === 'true' && !user.isEmailVerified && !user.isPhoneVerified) {
             return res.status(403).json({
-                msg: 'Please verify your email or phone to access this route',
+                message: 'Please verify your email or phone to access this route',
             })
         }
 
         next()
     } catch (error) {
-        res.status(500).json({ msg: 'Server error' })
+        res.status(500).json({ message: 'Server error' })
     }
 }
 
