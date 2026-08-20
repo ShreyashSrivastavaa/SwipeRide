@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Redis Service
+  redis:
+    image: redis:7-alpine
+    container_name: swiperide-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+  # MongoDB Service (Optional if using local/Atlas MongoDB)
+  mongodb:
+    image: mongo:7.0
+    container_name: swiperide-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=swiperide
+
+volumes:
+  redis-data:
+  mongo-data:

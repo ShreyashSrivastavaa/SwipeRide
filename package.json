@@ -1,10 +1,19 @@
 {
-    "name": "freedom",
+    "name": "swiperide",
     "version": "1.0.0",
-    "description": "An e-hailing application using Express and MongoDB",
+    "description": "SwipeRide motorcycle ride-hailing API",
     "main": "app.js",
     "scripts": {
         "start": "nodemon app.js",
+        "dev": "nodemon app.js",
+        "client": "npm run dev --prefix client",
+        "build:client": "npm run build --prefix client",
+        "dev:all": "concurrently -n \"API,APP\" -c \"cyan.bold,magenta.bold\" \"npm run dev\" \"npm run client\"",
+        "redis:docker": "docker compose up -d redis",
+        "redis:stop": "docker compose stop redis",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down",
+        "test": "jest --runInBand --detectOpenHandles --forceExit",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "format:fix": "npm run format:write",
@@ -12,12 +21,13 @@
         "lint:fix": "eslint --fix ."
     },
     "keywords": [
-        "jobs",
+        "swiperide",
+        "motorcycle",
         "express",
         "mongoose",
         "api"
     ],
-    "author": "Joel",
+    "author": "SwipeRide",
     "license": "ISC",
     "dependencies": {
         "@googlemaps/google-maps-services-js": "^3.4.0",
@@ -25,7 +35,6 @@
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.3",
         "cors": "^2.8.5",
-        "csurf": "^1.2.2",
         "dotenv": "^16.4.5",
         "express": "^4.21.1",
         "express-async-errors": "^3.1.1",
@@ -53,8 +62,12 @@
         "xss-clean": "^0.1.4"
     },
     "devDependencies": {
+        "concurrently": "^10.0.5",
         "eslint": "^9.12.0",
+        "jest": "^29.7.0",
+        "mongodb-memory-server": "^10.1.2",
         "nodemon": "^3.0.1",
-        "prettier": "^3.3.3"
+        "prettier": "^3.3.3",
+        "supertest": "^7.0.0"
     }
 }
