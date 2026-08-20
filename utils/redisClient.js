@@ -1,9 +1,13 @@
 const redis = require('redis')
 
+const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+const isTls = redisUrl.startsWith('rediss://')
+
 // Create a Redis client with exponential backoff reconnection strategy
 const redisClient = redis.createClient({
-    url: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+    url: redisUrl,
     socket: {
+        tls: isTls ? { rejectUnauthorized: false } : undefined,
         reconnectStrategy: (retries) => {
             if (retries > 10) {
                 // Stop retrying after 10 attempts to avoid spamming logs
