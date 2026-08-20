@@ -15,24 +15,28 @@ const {
     validate,
     isUserOrDriver,
     isAdmin,
-    verifyUser,
     isDriver,
 } = require('../middleware')
-const { rideValidator } = require('../validators')
+const {
+    rideValidator,
+    updateRideValidator,
+    updateRideStatusValidator,
+} = require('../validators')
+
 // Create a new ride
 router.post('/', protect, isUser, validate(rideValidator), createRide)
 
 // Update a ride
-router.put(
-    '/:id',
-    protect,
-    isUser,
-    verifyUser,
-    validate(rideValidator),
-    updateRide
-)
+router.put('/:id', protect, isUser, validate(updateRideValidator), updateRide)
 
-router.patch('/status/:id', protect, isDriver, updateRideStatusByDriver)
+// Update ride status (by driver)
+router.patch(
+    '/status/:id',
+    protect,
+    isDriver,
+    validate(updateRideStatusValidator),
+    updateRideStatusByDriver
+)
 
 // Get ride history for a user or driver
 router.get('/history', protect, isUserOrDriver, getRideHistory)
