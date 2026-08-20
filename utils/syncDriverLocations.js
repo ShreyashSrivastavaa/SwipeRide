@@ -1,10 +1,12 @@
 const cron = require('node-cron')
-const Driver = require('../models/Driver') // Your Driver model
-const { redisClient, connectRedis } = require('./redisClient') // Redis client and connection function
+const Driver = require('../models/Driver')
+const { redisClient, connectRedis } = require('./redisClient')
 
 // Function to sync driver locations from Redis to MongoDB
 const syncDriverLocations = async () => {
     try {
+        if (!redisClient.isOpen) return
+
         // Get all driver keys in Redis
         const driverKeys = await redisClient.keys('driver:*')
 
@@ -24,17 +26,21 @@ const syncDriverLocations = async () => {
                 })
             }
         }
-
-        console.log('Driver locations synced from Redis to MongoDB')
     } catch (error) {
-        console.error('Error syncing driver locations:', error)
+        if (process.env.NODE_ENV !== 'test') {
+            console.warn('Warning in syncDriverLocations:', error.message)
+        }
     }
 }
 
 // Initialize Redis and start the job
 const startSyncJob = async () => {
-    await connectRedis() // Ensure Redis is connected
-    cron.schedule('* * * * *', syncDriverLocations) // Schedule sync job to run every minute
+    if (process.env.NODE_ENV !== 'test') {
+        await connectRedis()
+        cron.schedule('* * * * *', syncDriverLocations)
+    }
 }
 
-startSyncJob() // Start the sync job
+startSyncJob()
+
+module.exports = { syncDriverLocations }
