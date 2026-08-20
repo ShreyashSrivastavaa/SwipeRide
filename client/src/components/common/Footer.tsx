@@ -153,11 +153,11 @@ export const Footer: React.FC = () => {
                   <GitHubIcon />
                 </a>
                 <a
-                  href="mailto:upscaletechsolution@gmail.com"
+                  href="mailto:shreyashsr2004@gmail.com"
                   className="px-3 py-1.5 rounded-lg bg-[#181F30] hover:bg-[#28324A] border border-[#2D3952] text-xs font-mono text-[#818CF8] hover:text-white flex items-center gap-1.5 transition-colors"
                 >
                   <Mail size={13} />
-                  <span>upscaletechsolution@gmail.com</span>
+                  <span>shreyashsr2004@gmail.com</span>
                 </a>
               </div>
             </div>
@@ -213,7 +213,7 @@ export const Footer: React.FC = () => {
                   className="w-full bg-[#121622] border border-[#2D374D] rounded-lg px-3 py-1.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#818CF8]"
                 />
                 <a
-                  href="mailto:upscaletechsolution@gmail.com?subject=Subscribe%20to%20UpscaleTechSolutions%20Updates"
+                  href="mailto:shreyashsr2004@gmail.com?subject=Subscribe%20to%20SwipeRide%20Updates"
                   className="w-full py-1.5 px-3 rounded-lg bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#4F46E5] hover:to-[#7C3AED] text-white text-xs font-bold font-display flex items-center justify-center gap-1.5 shadow transition-all"
                 >
                   <span>Subscribe</span>
@@ -240,9 +240,9 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-4 text-[11px] text-[#9CA3AF]">
             <a href="#privacy" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#terms" className="hover:text-white transition-colors">Terms of Service</a>
-            <span className="font-mono text-[#6B7280]">
-              upscaletechsolution@gmail.com
-            </span>
+            <a href="mailto:shreyashsr2004@gmail.com" className="font-mono text-[#818CF8] hover:text-white transition-colors">
+              shreyashsr2004@gmail.com
+            </a>
           </div>
         </div>
 

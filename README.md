@@ -190,20 +190,23 @@ The frontend is built upon a custom **Asphalt & Kinetic Street** design system:
 ## 👨‍💻 Created & Developed By
 
 **Shreyash Srivastava**  
-*Software Engineer @ [UpscaleTechSolutions](mailto:upscaletechsolution@gmail.com)*
+*Software Engineer @ [UpscaleTechSolutions](mailto:upscaletechsolution@gmail.com)*  
+📧 **Personal Email**: [shreyashsr2004@gmail.com](mailto:shreyashsr2004@gmail.com)  
+🐙 **GitHub**: [github.com/ShreyashSrivastavaa](https://github.com/ShreyashSrivastavaa)
 
 *SwipeRide is an independent full-stack motorcycle ride-hailing platform architected and built by Shreyash Srivastava.*
 
 ### 🏢 Company Affiliation: UpscaleTechSolutions
 *Building modern web experiences, autonomous agentic AI systems, and digital process automation for ambitious enterprises worldwide.*
 
-- 📧 **Contact**: [upscaletechsolution@gmail.com](mailto:upscaletechsolution@gmail.com)
+- 📧 **Company Contact**: [upscaletechsolution@gmail.com](mailto:upscaletechsolution@gmail.com)
 - 🌐 **Services**: AI Automation • Web Design & Development • Agentic AI Systems • AI Strategy & Consulting • Enterprise Architecture
 
 ---
 
 ## 📄 License
-MIT License. Created by **Shreyash Srivastava** (Software Engineer @ UpscaleTechSolutions) for **SwipeRide**.
+MIT License. Created by **Shreyash Srivastava** ([shreyashsr2004@gmail.com](mailto:shreyashsr2004@gmail.com)) for **SwipeRide**.
+
 
 
 
