@@ -12,30 +12,32 @@ const {
     isAdmin,
     isUser,
     validate,
-    verifyUser,
 } = require('../middleware')
-const userValidator = require('../validators/userValidator')
+const { updateUserValidator } = require('../validators')
 
 // User Routes (Protected)
 const router = express.Router()
 
+router.get('/profile', protect, isUser, (req, res, next) => {
+    req.params.id = req.user._id || req.user.id
+    getMyProfile(req, res, next)
+})
 router.get('/:id', protect, isUser, getMyProfile)
 router.patch(
     '/profile',
     protect,
     isUser,
-    validate(userValidator),
+    validate(updateUserValidator),
     updateMyProfile
 )
-// Admin-only route to get all users
-router.get('/', protect, isAdmin, verifyUser, getAllUsers)
-// Admin-only route to delete a user
-router.delete('/:id', protect, isAdmin, verifyUser, deleteUser)
+// Admin-only routes
+router.get('/', protect, isAdmin, getAllUsers)
+router.delete('/:id', protect, isAdmin, deleteUser)
 router.patch(
     '/:id',
     protect,
     isAdmin,
-    validate(userValidator),
+    validate(updateUserValidator),
     updateUserProfile
 )
 

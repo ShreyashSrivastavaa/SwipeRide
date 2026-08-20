@@ -1,6 +1,19 @@
-const adminValidator = require('./adminValidator')
-const userValidator = require('./userValidator')
-const rideValidator = require('./rideValidator')
+const {
+    adminValidator,
+    adminRegisterValidator,
+    suspendDriverValidator,
+} = require('./adminValidator')
+const {
+    userValidator,
+    userRegisterValidator,
+    updateUserValidator,
+} = require('./userValidator')
+const {
+    rideValidator,
+    createRideValidator,
+    updateRideValidator,
+    updateRideStatusValidator,
+} = require('./rideValidator')
 const ratingValidator = require('./ratingValidator')
 const {
     updateDriverValidator,
@@ -12,12 +25,20 @@ const {
     loginValidator,
     otpValidator,
     resendOtpValidator,
+    sendOtpValidator,
 } = require('./authValidator')
 
 module.exports = {
     adminValidator,
+    adminRegisterValidator,
+    suspendDriverValidator,
     userValidator,
+    userRegisterValidator,
+    updateUserValidator,
     rideValidator,
+    createRideValidator,
+    updateRideValidator,
+    updateRideStatusValidator,
     ratingValidator,
     updateDriverValidator,
     updateDriverStatusValidator,
@@ -26,4 +47,5 @@ module.exports = {
     loginValidator,
     otpValidator,
     resendOtpValidator,
+    sendOtpValidator,
 }

@@ -18,4 +18,31 @@ const rideValidator = Joi.object({
         }),
 })
 
-module.exports = rideValidator
+const updateRideValidator = Joi.object({
+    pickupLocation: Joi.string().optional().messages({
+        'string.empty': 'Pickup location cannot be empty',
+    }),
+    dropoffLocations: Joi.alternatives()
+        .try(
+            Joi.string(),
+            Joi.array().items(Joi.string()).min(1)
+        )
+        .optional(),
+})
+
+const updateRideStatusValidator = Joi.object({
+    status: Joi.string()
+        .valid('accepted', 'inProgress', 'completed', 'canceled')
+        .required()
+        .messages({
+            'any.only': 'Status must be accepted, inProgress, completed, or canceled',
+            'any.required': 'Status is required',
+        }),
+})
+
+module.exports = {
+    rideValidator,
+    createRideValidator: rideValidator,
+    updateRideValidator,
+    updateRideStatusValidator,
+}

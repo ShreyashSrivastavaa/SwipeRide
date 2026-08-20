@@ -4,13 +4,14 @@ const {
     getAdminProfile,
     suspendDriver,
 } = require('../controllers/adminController')
-const { protect, isAdmin, verifyUser } = require('../middleware')
+const { protect, isAdmin, validate } = require('../middleware')
+const { suspendDriverValidator } = require('../validators')
 
 const router = express.Router()
 
 // Admin Routes
 router.get('/profile', protect, isAdmin, getAdminProfile)
 // Admin can suspend/unsuspend a driver
-router.put('/:id', protect, isAdmin, suspendDriver)
+router.put('/:id', protect, isAdmin, validate(suspendDriverValidator), suspendDriver)
 
 module.exports = router
