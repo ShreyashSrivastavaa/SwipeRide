@@ -33,9 +33,9 @@ const syncDriverLocations = async () => {
     }
 }
 
-// Initialize Redis and start the job
+// Initialize Redis and start the job (standalone mode only)
 const startSyncJob = async () => {
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && process.env.VERCEL !== '1') {
         await connectRedis()
         cron.schedule('* * * * *', syncDriverLocations)
     }

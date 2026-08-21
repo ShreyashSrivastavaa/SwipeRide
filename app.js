@@ -4,8 +4,10 @@ require('dotenv').config()
 // Enable async error handling for Express
 require('express-async-errors')
 
-// Sync driver locations
-require('./utils/syncDriverLocations')
+// Sync driver locations (only in standalone server mode)
+if (process.env.VERCEL !== '1' && process.env.NODE_ENV !== 'test') {
+    require('./utils/syncDriverLocations')
+}
 
 // Core modules
 const express = require('express')

@@ -15,12 +15,34 @@ const getHeaders = (isMultipart = false) => {
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
-  const data = await res.json()
-  if (!res.ok) {
-    const errorMsg = data.message || data.msg || 'An error occurred'
-    throw new Error(errorMsg)
+  const contentType = res.headers.get('content-type') || ''
+  
+  if (contentType.includes('application/json')) {
+    const data = await res.json()
+    if (!res.ok) {
+      const errorMsg = data.message || data.msg || 'An error occurred'
+      throw new Error(errorMsg)
+    }
+    return data
   }
-  return data
+
+  // Non-JSON response (e.g. Vercel serverless 500/504 error page or HTML)
+  const text = await res.text()
+  if (!res.ok) {
+    if (text.includes('FUNCTION_INVOCATION_TIMEOUT')) {
+      throw new Error('Serverless function timed out. Please verify MONGO_URI in Vercel settings.')
+    }
+    if (text.includes('A server error') || text.includes('Internal Server Error')) {
+      throw new Error('Backend server error. Please ensure MONGO_URI is set in Vercel and MongoDB Atlas IP is whitelisted (0.0.0.0/0).')
+    }
+    throw new Error(text.slice(0, 150) || `Server responded with status ${res.status}`)
+  }
+
+  try {
+    return JSON.parse(text)
+  } catch {
+    throw new Error('Unexpected response format from server.')
+  }
 }
 
 export const api = {
