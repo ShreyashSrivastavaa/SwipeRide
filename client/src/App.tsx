@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { RideProvider, useRide } from './context/RideContext'
 import { Header } from './components/common/Header'
 import { Footer } from './components/common/Footer'
+import { Preloader } from './components/common/Preloader'
 import { HeroSection } from './components/landing/HeroSection'
 import { FareCalculatorWidget } from './components/landing/FareCalculatorWidget'
 import { FleetRadarWidget } from './components/landing/FleetRadarWidget'
@@ -18,6 +19,7 @@ import { DriverSimulatorDock } from './components/simulator/DriverSimulatorDock'
 function MainApp() {
   const { activeRide, ratingModalOpen, recentCompletedRide, closeRatingModal, clearActiveRide } = useRide()
 
+  const [isLoadingApp, setIsLoadingApp] = useState(true)
   const [currentView, setCurrentView] = useState<'landing' | 'booking' | 'tracking' | 'history'>('landing')
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false)
@@ -139,6 +141,11 @@ function MainApp() {
         isOpen={isSimulatorOpen}
         onClose={() => setIsSimulatorOpen(false)}
       />
+
+      {/* Futuristic Kinetic Preloader */}
+      {isLoadingApp && (
+        <Preloader onComplete={() => setIsLoadingApp(false)} />
+      )}
     </div>
   )
 }
